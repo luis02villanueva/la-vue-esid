@@ -635,16 +635,17 @@
                 <div class="formgrid grid">
                     <br>
                     <div class="field col-12">
-                        <label for="nombre_cliente">CURSO RESPECTIVO</label>
-                        <br />
+                        <label for="select" class="mb-3"
+                            >Seleccionar Curso</label
+                        >
                         <Dropdown
-                           
-                            :options="Categoria"
+                            v-model="select"
+                            :options="Cursos"
                             optionValue="id"
                             optionLabel="nombre_categoria"
                             placeholder="seleccione las categorias"
                             class="w-full md:w-50rem"
-                        >               
+                        >
                         </Dropdown>
                     </div>
                     <div class="field col-12">
@@ -676,6 +677,7 @@ import axios from "axios";
 export default {
     data() {
         return {
+            Cursos:[],
             RESPUESTA: [],
             clienteDialog: false,
             clienteeditarDialog: false,
@@ -721,8 +723,13 @@ export default {
 
     mounted() {
         this.listarCliente();
+        this.listarCursos();
     },
     methods: {
+        async listarCursos(){
+            this.Cursos = (await axios.get('api/cursos')).data;
+            console.log('cursos',this.Cursos);
+        },
 
         async  nuevo(){
             var listacursocliente = [
