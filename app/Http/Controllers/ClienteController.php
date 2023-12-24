@@ -14,8 +14,10 @@ class ClienteController extends Controller
     public function index()
     {
 
-        $cliente = DB::table("clientes")
-            ->select('id', 'nombre_cliente', 'dni', 'codigo', 'registro', 'tema_curso', 'fecha_emision')
+        $cliente = DB::table("curso__clientes")
+            ->select('curso__clientes.id', 'nombre_cliente', 'dni')
+            ->join('clientes','curso__clientes.clientes_id','=','clientes.id')
+            ->join('cursos','curso__clientes.clientes_id','=','cursos.id')
             ->get();
         return response()->json($cliente);
     }

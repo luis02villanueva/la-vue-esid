@@ -21,6 +21,9 @@ class CursoSeeder extends Seeder
             'nombre_curso' => 'GESTION PUBLICA',
             'descripcion_curso' => 'GESTION ',
             'avatar_cursos' => '124522.png',
+            'fecha_inicio' => '2022-07-20',
+            'fecha_fin' => '2022-09-21',
+            'hora_lectivas' => '336',
             'categoria_id' => 1,
         ]);
 
@@ -29,6 +32,9 @@ class CursoSeeder extends Seeder
             'nombre_curso' => 'COMPRAS Y BIENES INFERIORES A 8 UIT',
             'descripcion_curso' => 'Curso donde se dicta buenos temas ',
             'avatar_cursos' => '124522.png',
+            'fecha_inicio' => '2022-07-20',
+            'fecha_fin' => '2022-09-21',
+            'hora_lectivas' => '336',
             'categoria_id' => 2,
         ]);
 
@@ -36,6 +42,9 @@ class CursoSeeder extends Seeder
             'nombre_curso' => 'FORMACION DE GESTORES LOGISTICOS',
             'descripcion_curso' => 'Curso donde se dicta buenos temas ',
             'avatar_cursos' => '124522.png',
+            'fecha_inicio' => '2022-07-20',
+            'fecha_fin' => '2022-09-21',
+            'hora_lectivas' => '336',
             'categoria_id' => 3,
         ]);
     }

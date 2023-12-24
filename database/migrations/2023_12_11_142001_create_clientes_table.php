@@ -18,18 +18,8 @@ class CreateClientesTable extends Migration
             $table->string('nombre_cliente');
             $table->string('dni')->nullable();
             $table->string('celular')->nullable();
-            $table->string('correo')->nullable();
-            $table->string('lugar_trabajo')->nullable();
-            $table->string('area')->nullable();            
+            $table->string('correo')->nullable();      
             $table->string('ciudad')->nullable();
-            $table->string('codigo')->nullable();
-            $table->string('registro')->nullable();
-            $table->date('fecha_emision')->nullable();
-            $table->string('horas_lectivas')->nullable();
-            $table->date('fecha_inicio')->nullable();
-            $table->date('fecha_fin')->nullable();
-            $table->string('tema_curso')->nullable();         
-            $table->string('nota')->nullable();
             $table->timestamps();
         });
     }

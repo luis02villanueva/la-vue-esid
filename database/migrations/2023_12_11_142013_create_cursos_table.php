@@ -18,6 +18,9 @@ class CreateCursosTable extends Migration
             $table->string('nombre_curso');
             $table->string('descripcion_curso');
             $table->string('avatar_cursos');
+            $table->date('fecha_inicio')->nullable();
+            $table->date('fecha_fin')->nullable();
+            $table->integer('hora_lectivas')->nullable();
             $table->unsignedBigInteger('categoria_id');
             $table->boolean('estado')->default(1);
             $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('cascade');
