@@ -646,6 +646,12 @@
                         <label for="dni">ARCHIVO DE DATOS</label>
                     </div>
                 </div>
+
+                <div class="formgrid grid">
+                    <div class="field col-12">
+                    <input type="file">
+                    </div>
+                </div>
                 <template #footer>
                     <Button
                         label="No"

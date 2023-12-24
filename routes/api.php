@@ -42,7 +42,7 @@ Route::delete('/cursos/{id}', [CursoController::class, 'destroy']);
 // Controlador Clientes 
 Route::get('clientes', [ClienteController::class, 'index']);
 Route::get('/clientes/{id}', [ClienteController::class, 'show']);
-
+Route::post('/clienteimport', [ClienteController::class, 'saveExcelCliente'])->name('import');
 Route::post('clientes', [ClienteController::class, 'store']);
 Route::post('/clientes/{id}', [ClienteController::class, 'edit']);
 Route::delete('/clientes/{id}', [ClienteController::class, 'destroy']);
