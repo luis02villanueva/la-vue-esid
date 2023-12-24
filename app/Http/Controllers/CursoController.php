@@ -13,7 +13,9 @@ class CursoController extends Controller
     public function index()
     {
         $cursos = DB::table("cursos")
-            ->select( 'cursos.id','nombre_categoria', 'nombre_curso','descripcion_curso', 'avatar', 'avatar_cursos','cursos.estado')
+            ->select( 'cursos.id','nombre_categoria', 
+            'nombre_curso','descripcion_curso', 'avatar', 'hora_lectivas', 
+            'avatar_cursos','cursos.estado','fecha_inicio', 'fecha_fin')
             ->where('cursos.estado',1)
             ->join('categorias', 'categorias.id', '=', 'cursos.categoria_id')
            

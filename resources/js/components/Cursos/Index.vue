@@ -105,6 +105,28 @@
                                 sortable
                                 style="width: 20%"
                                 >{{ slotProps.data.nombre_categoria }}</Column
+                            >                            
+                            <Column
+                                field="hora_lectivas"
+                                header="Hors lectivas"
+                                sortable
+                                style="width: 20%"
+                                >{{ slotProps.data.hora_lectivas }}</Column
+                            >
+
+                            <Column
+                                field="fecha_inicio"
+                                header="Fecha de incio"
+                                sortable
+                                style="width: 20%"
+                                >{{ slotProps.data.fecha_inicio }}</Column
+                            >
+                            <Column
+                                field="fecha_fin"
+                                header="Fecha fin"
+                                sortable
+                                style="width: 20%"
+                                >{{ slotProps.data.fecha_fin }}</Column
                             >
 
                             <Column

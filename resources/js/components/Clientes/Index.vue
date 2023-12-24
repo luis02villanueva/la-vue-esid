@@ -58,7 +58,7 @@
                 >
                     <div class="table-responsive">
                         <DataTable
-                            :value="CLIENTE"
+                            :value="listClients"
                             tableStyle="min-width: 60rem"
                             paginator
                             :rows="3"
@@ -82,32 +82,26 @@
                                 >{{ slotProps.data.dni }}
                             </Column>
                             <Column
-                                field="codigo"
-                                header="CODIGO"
+                                field="ciudad"
+                                header="CIUDAD"
                                 sortable
                                 style="width: 10%"
-                                >{{ slotProps.data.codigo }}
+                                >
+                                {{ slotProps.data.ciudad }}
                             </Column>
                             <Column
-                                field="registro"
-                                header="REGISTRO"
+                                field="cursos"
+                                header="CURSOS"
                                 sortable
                                 style="width: 10%"
-                                >{{ slotProps.data.registro }}
-                            </Column>
-                            <Column
-                                field="tema_curso"
-                                header="CURSO"
-                                sortable
-                                style="width: 30%"
-                                >{{ slotProps.data.tema_curso }}
-                            </Column>
-                            <Column
-                                field="fecha_emision"
-                                header="FECHA DE EMISION"
-                                sortable
-                                style="width: 30%"
-                                >{{ slotProps.data.fecha_emision }}
+                                >
+                                <template #body="slotProps">                                   
+                                    <ul>
+                                        <li v-for="(item,index) in  slotProps.data.cursos" :key="index">
+                                            {{item.nombre_curso}}
+                                        </li>
+                                    </ul>
+                                </template>
                             </Column>
 
                             <Column :exportable="false" style="width: 20%">
@@ -685,6 +679,7 @@ export default {
             importDialog: false,
             deleteDialog: false,
             CLIENTE: [],
+            listClients:[],
             nombre_cliente: "",
             dni: "",
             celular: "",
@@ -728,7 +723,6 @@ export default {
     methods: {
         async listarCursos(){
             this.Cursos = (await axios.get('api/cursos')).data;
-            console.log('cursos',this.Cursos);
         },
 
         async  nuevo(){
@@ -763,8 +757,8 @@ export default {
         },
 
         async listarCliente() {
-            this.CLIENTE = (await axios.get("/api/clientes")).data;
-            console.log(this.CLIENTE);
+            const resp = (await axios.get("/api/clientes")).data;
+            this.listClients = resp;
         },
         conversion_date(fecha) {
             let myDate = new Date(Date.parse(fecha));
