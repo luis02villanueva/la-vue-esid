@@ -90,6 +90,22 @@
                                 {{ slotProps.data.ciudad }}
                             </Column>
                             <Column
+                                field="codigos"
+                                header="CODIGO"
+                                sortable
+                                style="width: 10%"
+                                >
+                                {{ slotProps.data.codigos }}
+                            </Column>
+                            <Column
+                                field="registros"
+                                header="REGISTRO"
+                                sortable
+                                style="width: 10%"
+                                >
+                                {{ slotProps.data.registros }}
+                            </Column>
+                            <Column
                                 field="cursos"
                                 header="CURSOS"
                                 sortable
@@ -633,11 +649,11 @@
                             >Seleccionar Curso</label
                         >
                         <Dropdown
-                            v-model="select"
+                            v-model="selectCourse"
                             :options="Cursos"
                             optionValue="id"
-                            optionLabel="nombre_categoria"
-                            placeholder="seleccione las categorias"
+                            optionLabel="nombre_curso"
+                            placeholder="seleccione el curso"
                             class="w-full md:w-50rem"
                         >
                         </Dropdown>
@@ -649,7 +665,7 @@
 
                 <div class="formgrid grid">
                     <div class="field col-12">
-                    <input type="file">
+                    <input type="file" @change="handlerImportExcel"> 
                     </div>
                 </div>
                 <template #footer>
@@ -657,13 +673,13 @@
                         label="No"
                         icon="pi pi-times"
                         text
-                        @click="deleteDialog = false"
+                        @click="importDialog = false"
                     />
                     <Button
                         label="Yes"
                         icon="pi pi-check"
                         text
-                        @click="EliminarCliente"
+                        @click="importClient()"
                     />
                 </template>
             </Dialog>
@@ -719,6 +735,8 @@ export default {
                 nota: "",
                 id: "",
             },
+            selectCourse:null,
+            importExcel:null,
         };
     },
 
@@ -729,6 +747,7 @@ export default {
     methods: {
         async listarCursos(){
             this.Cursos = (await axios.get('api/cursos')).data;
+            console.log("this.Cursos",this.Cursos)
         },
 
         async  nuevo(){
@@ -757,6 +776,24 @@ export default {
         },
         openCliente() {
             this.clienteDialog = true;
+        },
+        handlerImportExcel($event){
+            this.importExcel = $event.target.files[0];
+        },
+        async importClient(){
+            const form = new FormData();
+            form.append("file", this.importExcel);
+            form.append("curso_id", this.selectCourse);
+            try {
+                const resp = await axios.post("/api/clienteimport", form);
+                console.log("resp", resp);
+                this.listarCliente();
+                alert("Termino el import");
+            } catch (err) {
+                alert(err);
+                // console.log(" err", this.IMPORT)
+            }
+            this.importDialog = false;
         },
         async importCliente() {
             this.importDialog = true;

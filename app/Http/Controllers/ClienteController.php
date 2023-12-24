@@ -6,7 +6,8 @@ use App\Models\Cliente;
 use App\Models\Curso_Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ClienteImport;
 
 class ClienteController extends Controller
 {
@@ -15,9 +16,12 @@ class ClienteController extends Controller
     {
 
         $clientes = DB::table("curso__clientes")
-            ->select('clientes.id', 'nombre_cliente', 'dni','ciudad')
+            ->select('clientes.id', 'nombre_cliente', 'dni','ciudad', 
+            DB::raw('GROUP_CONCAT(codigo) as codigos'),
+            DB::raw('GROUP_CONCAT(registro) as registros'))
             ->join('clientes','curso__clientes.clientes_id','=','clientes.id')
             ->groupBy('clientes.id', 'nombre_cliente', 'dni','ciudad')
+            ->orderBy('clientes.created_at', 'desc') 
             ->get();
         foreach ($clientes as $cliente){
             $cursos = DB::table("curso__clientes")
@@ -33,14 +37,61 @@ class ClienteController extends Controller
         }
         return response()->json($clientes);
     }
-
+    public function getConvertDate(string $excelData){
+        return date("Y-m-d", strtotime("1899-12-30 +{$excelData} days"));
+    }
     public function saveExcelCliente(Request $request)
     {
         try{
-            Excel::import(new ClienteImport,$request->file('file')); 
+            $cursos_id = $request->input('curso_id');
+            $data = Excel::toArray(new ClienteImport, $request->file('file'));
             //$usuarios = (new UsersImport)->toArray($request->file("files"));
+            $headers = $data[0][0];
+            $clientes = [];            
+            for ($i = 1; $i < count($data[0]); $i++) {
+                $cliente = new Cliente();
+                foreach ($headers as $index => $header) {
+                    $cliente->{$header} = $data[0][$i][$index];
+                }
+                $clientes[] = $cliente;
+            }
+            foreach ($clientes as $cliente){
+                $client = DB::table("clientes")
+                ->where('dni',$cliente->dni)
+                ->first();
+                if($client){
+                    $curso_cliente = new Curso_Cliente;
+                    $curso_cliente->cursos_id = intval($cursos_id);
+                    $curso_cliente->clientes_id = $client->id;
+                    $curso_cliente->lugar_trabajo = $cliente->lugar_trabajo;
+                    $curso_cliente->area = $cliente->area;
+                    $curso_cliente->codigo = $cliente->codigo;
+                    $curso_cliente->registro = $cliente->registro;
+                    $curso_cliente->fecha_emision = $this->getConvertDate($cliente->fecha_emision);
+                    $curso_cliente->nota = $cliente->nota;
+                    $curso_cliente->save();
+                }else{
+                    $client_new = new Cliente;
+                    $client_new->nombre_cliente = $cliente->nombres;
+                    $client_new->dni = $cliente->dni;
+                    $client_new->celular = $cliente->celular;
+                    $client_new->ciudad = $cliente->ciudad;
+                    $client_new->correo = $cliente->correo;
+                    $client_new->save();
 
-            return response()->json("Import success",200);
+                    $curso_cliente = new Curso_Cliente;
+                    $curso_cliente->cursos_id = intval($cursos_id);
+                    $curso_cliente->clientes_id = $client_new->id;
+                    $curso_cliente->lugar_trabajo = $cliente->lugar_trabajo;
+                    $curso_cliente->area = $cliente->area;
+                    $curso_cliente->codigo = $cliente->codigo;
+                    $curso_cliente->registro = $cliente->registro;
+                    $curso_cliente->fecha_emision = $this->getConvertDate($cliente->fecha_emision);
+                    $curso_cliente->nota = $cliente->nota;
+                    $curso_cliente->save();
+                }        
+            }
+            return response()->json('Import success',200);
 
         }catch ( \Exception $e){
             return response()->json($e->getMessage(),200);

@@ -18,8 +18,6 @@ class Curso extends Model
         'estado'
     ];
 
-    public $timestamps = false;
-
     public function Categoria()
     {
         return $this->belongsTo(Categoria::class, 'categoria_id','id');

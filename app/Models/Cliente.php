@@ -28,9 +28,6 @@ class Cliente extends Model
         'tema_curso' ,
         'nota',
     ];
-
-    public $timestamps = false;
-
     public function cursos()
     {
         return $this->belongsToMany(Curso::class,'curso_clientes','clientes_id','cursos_id');

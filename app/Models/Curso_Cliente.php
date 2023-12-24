@@ -14,8 +14,11 @@ class Curso_Cliente extends Model
     protected $fillable = [
         'curso_id',
         'clientes_id',
-       
+        'lugar_trabajo',
+        'area',
+        'codigo',
+        'registro',
+        'fecha_emision',
+        'nota',
     ] ;
-
-    public $timestamps = false;
 }

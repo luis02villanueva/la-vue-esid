@@ -18,7 +18,6 @@ class Categoria extends Model
         'estado'
     ] ;
 
-    public $timestamps = false;
     public function Cursos()
     {
         return $this->hasMany(Curso::class,'categoria_id','id');
