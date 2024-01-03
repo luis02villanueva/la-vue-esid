@@ -15,6 +15,9 @@ class Curso extends Model
         'descripcion_curso',
         'avatar_cursos',
         'categoria_id',
+        'fecha_inicio',
+        'fecha_fin',
+        'horas_lectivas',
         'estado'
     ];
 

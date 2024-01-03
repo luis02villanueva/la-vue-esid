@@ -13,12 +13,12 @@ class CursoController extends Controller
     public function index()
     {
         $cursos = DB::table("cursos")
-            ->select( 'cursos.id','nombre_categoria', 
-            'nombre_curso','descripcion_curso', 'avatar', 'hora_lectivas', 
+            ->select( 'cursos.id','nombre_categoria',
+            'nombre_curso','descripcion_curso', 'avatar', 'horas_lectivas',
             'avatar_cursos','cursos.estado','fecha_inicio', 'fecha_fin')
             ->where('cursos.estado',1)
             ->join('categorias', 'categorias.id', '=', 'cursos.categoria_id')
-           
+
             ->get();
         return response()->json($cursos);
     }
@@ -32,7 +32,9 @@ class CursoController extends Controller
         $cursos->nombre_curso = $request->input('nombre_curso');
         $cursos->descripcion_curso = $request->input('descripcion_curso');
         $cursos->categoria_id = $request->input('categoria_id');
-
+        $cursos->horas_lectivas = $request->input('horas_lectivas');
+        $cursos->fecha_inicio = $request->input('fecha_inicio');
+        $cursos->fecha_fin = $request->input('fecha_fin');
 
         if ($request->hasfile('avatar_cursos')) {
             $file = $request->file('avatar_cursos');
@@ -43,7 +45,7 @@ class CursoController extends Controller
         }
         $cursos->save();
         $data = [
-            
+
             'status' => 200,
         ];
         return response()->json($data);
@@ -53,7 +55,7 @@ class CursoController extends Controller
     public function show($id)
     {
         $data = Curso::findOrFail($id);
-        
+
         return response()->json($data);
     }
 
@@ -78,7 +80,7 @@ class CursoController extends Controller
             $cursos->avatar_cursos = $filename;
         }
 
-     
+
 
         $cursos->save();
 
@@ -88,7 +90,7 @@ class CursoController extends Controller
 
     public function update(Request $request, $id)
     {
-        
+
     }
 
 

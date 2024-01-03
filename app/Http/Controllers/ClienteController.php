@@ -16,38 +16,57 @@ class ClienteController extends Controller
     {
 
         $clientes = DB::table("curso__clientes")
-            ->select('clientes.id', 'nombre_cliente', 'dni','ciudad', 
-            DB::raw('GROUP_CONCAT(codigo) as codigos'),
-            DB::raw('GROUP_CONCAT(registro) as registros'))
-            ->join('clientes','curso__clientes.clientes_id','=','clientes.id')
-            ->groupBy('clientes.id', 'nombre_cliente', 'dni','ciudad')
-            ->orderBy('clientes.created_at', 'desc') 
+            ->select(
+                'clientes.id',
+                'nombre_cliente',
+                'dni',
+                'ciudad',
+                DB::raw('GROUP_CONCAT(codigo) as codigos'),
+                DB::raw('GROUP_CONCAT(registro) as registros')
+            )
+            ->join('clientes', 'curso__clientes.clientes_id', '=', 'clientes.id')
+            ->groupBy('clientes.id', 'nombre_cliente', 'dni', 'ciudad')
+            ->orderBy('clientes.created_at', 'desc')
             ->get();
-        foreach ($clientes as $cliente){
+        foreach ($clientes as $cliente) {
             $cursos = DB::table("curso__clientes")
-            ->select('cursos.id','nombre_curso'
-            ,'descripcion_curso','fecha_inicio','fecha_inicio'
-            ,'fecha_fin','hora_lectivas')
-            ->join('cursos','curso__clientes.cursos_id','=','cursos.id')
-            ->groupBy('cursos.id','nombre_curso','descripcion_curso','fecha_inicio','fecha_inicio'
-            ,'fecha_fin','hora_lectivas')
-            ->where('curso__clientes.clientes_id',$cliente->id)
-            ->get();
+                ->select(
+                    'cursos.id',
+                    'nombre_curso',
+                    'descripcion_curso',
+                    'fecha_inicio',
+                    'fecha_inicio',
+                    'fecha_fin',
+                    'horas_lectivas'
+                )
+                ->join('cursos', 'curso__clientes.cursos_id', '=', 'cursos.id')
+                ->groupBy(
+                    'cursos.id',
+                    'nombre_curso',
+                    'descripcion_curso',
+                    'fecha_inicio',
+                    'fecha_inicio',
+                    'fecha_fin',
+                    'horas_lectivas'
+                )
+                ->where('curso__clientes.clientes_id', $cliente->id)
+                ->get();
             $cliente->cursos = $cursos;
         }
         return response()->json($clientes);
     }
-    public function getConvertDate(string $excelData){
+    public function getConvertDate(string $excelData)
+    {
         return date("Y-m-d", strtotime("1899-12-30 +{$excelData} days"));
     }
     public function saveExcelCliente(Request $request)
     {
-        try{
+        try {
             $cursos_id = $request->input('curso_id');
             $data = Excel::toArray(new ClienteImport, $request->file('file'));
             //$usuarios = (new UsersImport)->toArray($request->file("files"));
             $headers = $data[0][0];
-            $clientes = [];            
+            $clientes = [];
             for ($i = 1; $i < count($data[0]); $i++) {
                 $cliente = new Cliente();
                 foreach ($headers as $index => $header) {
@@ -55,11 +74,11 @@ class ClienteController extends Controller
                 }
                 $clientes[] = $cliente;
             }
-            foreach ($clientes as $cliente){
+            foreach ($clientes as $cliente) {
                 $client = DB::table("clientes")
-                ->where('dni',$cliente->dni)
-                ->first();
-                if($client){
+                    ->where('dni', $cliente->dni)
+                    ->first();
+                if ($client) {
                     $curso_cliente = new Curso_Cliente;
                     $curso_cliente->cursos_id = intval($cursos_id);
                     $curso_cliente->clientes_id = $client->id;
@@ -70,7 +89,7 @@ class ClienteController extends Controller
                     $curso_cliente->fecha_emision = $this->getConvertDate($cliente->fecha_emision);
                     $curso_cliente->nota = $cliente->nota;
                     $curso_cliente->save();
-                }else{
+                } else {
                     $client_new = new Cliente;
                     $client_new->nombre_cliente = $cliente->nombres;
                     $client_new->dni = $cliente->dni;
@@ -89,12 +108,11 @@ class ClienteController extends Controller
                     $curso_cliente->fecha_emision = $this->getConvertDate($cliente->fecha_emision);
                     $curso_cliente->nota = $cliente->nota;
                     $curso_cliente->save();
-                }        
+                }
             }
-            return response()->json('Import success',200);
-
-        }catch ( \Exception $e){
-            return response()->json($e->getMessage(),200);
+            return response()->json('Import success', 200);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 200);
         }
     }
     public function create(Request $request)
@@ -117,22 +135,22 @@ class ClienteController extends Controller
         $clientes = new Cliente;
         $clientes->nombre_cliente = $request->input('nombre_cliente');
         $clientes->dni = $request->input('dni');
-        $clientes->celular = $request->input('celular');
-        $clientes->correo = $request->input('correo');
-        $clientes->lugar_trabajo = $request->input('lugar_trabajo');
-        $clientes->area = $request->input('area');
         $clientes->ciudad = $request->input('ciudad');
-        $clientes->codigo = $request->input('codigo');
-        $clientes->registro = $request->input('registro');
-        $clientes->fecha_emision = $request->input('fecha_emision');
-        $clientes->horas_lectivas = $request->input('horas_lectivas');
-        $clientes->fecha_inicio = $request->input('fecha_inicio');
-        $clientes->fecha_fin = $request->input('fecha_fin');
-        $clientes->tema_curso = $request->input('tema_curso');
-        $clientes->nota = $request->input('nota');
-       
-        $clientes->save();
 
+
+        $clientes->save();
+        // $clientesa->save();
+        $cursos_id = $request->input('curso_id');
+        $client_new = new Curso_Cliente;
+        $client_new->nombre_cliente = $clientes->nombre_cliente;
+        $client_new->dni = $clientes->dni;
+        dd($client_new);
+        $client_new->ciudad = $clientes->ciudad;
+
+        $client_new->codigo = $request->input('codigo');
+        $client_new->registro = $request->input('registro');
+        $client_new->cursos_id = intval($cursos_id);
+        $client_new->save();
 
         //Array de detalles
         //Recorro todos los elementos
@@ -144,7 +162,8 @@ class ClienteController extends Controller
         // }
         $data = [
             'message' => 'clientes creado satisfactoriamente',
-            'clientes' => $clientes,
+            'clientes' => $client_new,
+
 
             'status' => 200,
         ];
@@ -177,7 +196,7 @@ class ClienteController extends Controller
         $clientes->fecha_fin = $request->input('fecha_fin');
         $clientes->tema_curso = $request->input('tema_curso');
         $clientes->nota = $request->input('nota');
-        
+
         $clientes->update();
         $data = [
             'message' => 'clientes actualizado satisfactoriamente',

@@ -22,11 +22,12 @@ class Cliente extends Model
         'codigo',
         'registro' ,
         'fecha_emision',
-        'horas_lectivas' ,
+        'horas_lectivas',
         'fecha_inicio' ,
         'fecha_fin' ,
         'tema_curso' ,
         'nota',
+        'cursos_id'
     ];
     public function cursos()
     {

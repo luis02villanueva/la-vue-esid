@@ -41,8 +41,7 @@
                             class="btn btn-primary"
                             @click="openNew()"
                         >
-                            <i class="ki-duotone ki-plus fs-2"></i> Crear
-                            Cursos
+                            <i class="ki-duotone ki-plus fs-2"></i> Crear Cursos
                         </button>
                     </div>
                 </div>
@@ -105,9 +104,9 @@
                                 sortable
                                 style="width: 20%"
                                 >{{ slotProps.data.nombre_categoria }}</Column
-                            >                            
+                            >
                             <Column
-                                field="hora_lectivas"
+                                field="horas_lectivas"
                                 header="Hors lectivas"
                                 sortable
                                 style="width: 20%"
@@ -228,7 +227,7 @@
                 :modal="true"
                 class="p-fluid"
             >
-            <br>
+                <br />
                 <div class="formgrid grid">
                     <br />
                     <div class="field col">
@@ -332,7 +331,9 @@
                         />
                     </div>
                     <br />
-                    <div class="field col-12">
+                </div>
+                <div class="formgrid grid">
+                    <div class="field col">
                         <label for="select" class="mb-3"
                             >Seleccionar Categoria</label
                         >
@@ -345,6 +346,42 @@
                             class="w-full md:w-50rem"
                         >
                         </Dropdown>
+                    </div>
+
+                    <div class="field col">
+                        <label for="fecha_inicio">FECHA DE INICIO </label>
+                        <br />
+
+                        <Calendar
+                            v-model="fecha_inicio"
+                            dateFormat="dd/mm/yy"
+                            showIcon
+                            iconDisplay="input"
+                        />
+                    </div>
+                </div>
+
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="fecha_fin">FECHA DE FIN </label>
+                        <br />
+
+                        <Calendar
+                            v-model="fecha_fin"
+                            dateFormat="dd/mm/yy"
+                            showIcon
+                            iconDisplay="input"
+                        />
+                    </div>
+                    <div class="field col">
+                        <label for="horas_lectivas">HORAS LECTIVAS</label>
+                        <InputText
+                            v-model="horas_lectivas"
+                            type="text"
+                            required="true"
+                            size="large"
+                            placeholder="Ingrese las horas lectivas"
+                        />
                     </div>
                 </div>
                 <template #footer>
@@ -474,7 +511,10 @@
                         />
                     </div>
                     <br />
-                    <div class="field col-12">
+                </div>
+
+                <div class="formgrid grid">
+                    <div class="field col">
                         <label for="select" class="mb-3"
                             >Seleccionar Categoria</label
                         >
@@ -487,6 +527,42 @@
                             class="w-full md:w-50rem"
                         >
                         </Dropdown>
+                    </div>
+
+                    <div class="field col">
+                        <label for="fecha_inicio">FECHA DE INICIO </label>
+                        <br />
+
+                        <Calendar
+                            v-model="acursito.fecha_inicio"
+                            dateFormat="dd/mm/yy"
+                            showIcon
+                            iconDisplay="input"
+                        />
+                    </div>
+                </div>
+
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="fecha_fin">FECHA DE FIN </label>
+                        <br />
+
+                        <Calendar
+                            v-model="acursito.fecha_fin"
+                            dateFormat="dd/mm/yy"
+                            showIcon
+                            iconDisplay="input"
+                        />
+                    </div>
+                    <div class="field col">
+                        <label for="horas_lectivas">HORAS LECTIVAS</label>
+                        <InputText
+                            v-model="acursito.horas_lectivas"
+                            type="text"
+                            required="true"
+                            size="large"
+                            placeholder="Ingrese las horas lectivas"
+                        />
                     </div>
                 </div>
                 <template #footer>
@@ -555,6 +631,9 @@ export default {
             categoria_id: "",
             Categoria: [],
             avatar_cursos: "",
+            horas_lectivas: "",
+            fecha_inicio: "",
+            fecha_fin: "",
             imgpreview: "",
             RESPUESTA: [],
             select: null,
@@ -565,10 +644,12 @@ export default {
                 nombre_categoria: "",
                 categoria_id: "",
                 select: "",
-
+                horas_lectivas: "",
+                fecha_inicio: "",
+                fecha_fin: "",
                 avatar_cursos: "",
             },
-            
+
             infocurso: [],
         };
     },
@@ -595,6 +676,11 @@ export default {
             var nuevito = await (await axios.get("/api/cursos/" + value)).data;
             this.acursito.nombre_curso = nuevito.nombre_curso;
             this.acursito.descripcion_curso = nuevito.descripcion_curso;
+
+            this.acursito.horas_lectivas = nuevito.horas_lectivas;
+            this.acursito.fecha_inicio = nuevito.fecha_inicio;
+            this.acursito.fecha_fin = nuevito.fecha_fin;
+
             this.acursito.select = nuevito.categoria_id;
             this.acursito.id = nuevito.id;
 
@@ -604,19 +690,17 @@ export default {
         },
 
         async confirmDeleteCurso(value) {
-
             var finId = await (await axios.get("/api/cursos/" + value)).data;
             this.acursito.id = finId.id;
             this.acursito.nombre_curso = finId.nombre_curso;
 
-            console.log( this.acursito.nombre_curso);
+            console.log(this.acursito.nombre_curso);
             this.deletecursoDialog = true;
         },
         async EliminarCurso() {
             await axios.delete("/api/cursos/" + this.acursito.id);
             this.listarCursos();
             this.deletecursoDialog = false;
-
         },
         hideDialog() {
             this.cursoDialog = false;
@@ -637,22 +721,36 @@ export default {
             };
             reader.readAsDataURL(file);
         },
-
+        conversion_date(fecha) {
+            let myDate = new Date(Date.parse(fecha));
+            let realDate =
+                myDate.getFullYear() +
+                "-" +
+                ("0" + (myDate.getMonth() + 1)).slice(-2) +
+                "-" +
+                ("0" + myDate.getDate()).slice(-2);
+            return realDate;
+        },
         async guardarCurso() {
             const formData = new FormData();
             formData.append("nombre_curso", this.nombre_curso);
             formData.append("descripcion_curso", this.descripcion_curso);
             formData.append("avatar_cursos", this.avatar_cursos);
             formData.append("categoria_id", this.select);
-
+            formData.append("horas_lectivas", this.horas_lectivas);
+            formData.append(
+                "fecha_inicio",
+                this.conversion_date(this.fecha_inicio)
+            );
+            formData.append("fecha_fin", this.conversion_date(this.fecha_fin));
             this.RESPUESTA = await await axios.post("/api/cursos", formData);
-
+            console.log("crear curso", this.RESPUESTA);
             if (this.RESPUESTA.status == 200) {
                 window.location.href = "/cursos";
                 this.$swal.fire({
                     text: "Curso guardado exitosamente",
                     icon: "success",
-                    timer: 8000,
+                    timer: 1000,
                 });
             }
             this.cursoDialog = false;
@@ -678,6 +776,15 @@ export default {
             );
             formData.append("avatar_cursos", this.acursito.avatar_cursos);
             formData.append("categoria_id", this.acursito.select);
+            formData.append("horas_lectivas", this.acursito.horas_lectivas);
+            formData.append(
+                "fecha_inicio",
+                this.conversion_date(this.acursito.fecha_inicio)
+            );
+            formData.append(
+                "fecha_fin",
+                this.conversion_date(this.acursito.fecha_fin)
+            );
 
             console.log(formData.get("nombre_curso"));
             console.log(formData.get("descripcion_curso"));

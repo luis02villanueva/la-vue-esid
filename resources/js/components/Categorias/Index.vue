@@ -582,7 +582,7 @@ export default {
             this.Categorias = await (
                 await axios.get("/api/categoria", { params: this.params })
             ).data.categorias;
-            console.log(this.Categorias);
+
         },
         async confirmDeleteCategoria(value){
           this.deletecategoriaDialog = true;
@@ -590,14 +590,14 @@ export default {
             this.categorias.id = finId.id;
             this.categorias.nombre_categoria = finId.nombre_categoria;
 
-            console.log( this.categorias.nombre_curso);
-            
+
+
         },
         async eliminarDato() {
             await axios.delete("/api/categoria/" + this.categorias.id);
             this.deletecategoriaDialog = false;
             this.listarCategorias();
-           
+
         },
         async openCategoria() {
             this.abrirDialog = true;
@@ -626,23 +626,25 @@ export default {
                 this.descripcion_categoria
             );
             formData.append("avatar", this.avatar);
-
-            this.RESPUESTA = await await axios.post("/api/categoria", formData);
+            console.log(formData.get("avatar"));
+            this.RESPUESTA = await( await axios.post("/api/categoria", formData));
+            console.log('crear',this.RESPUESTA);
 
             if (this.RESPUESTA.status == 200) {
                 window.location.href = "/categorias";
                 this.$swal.fire({
                     text: "Categoria guardado exitosamente",
                     icon: "success",
-                    timer: 8000,
+                    timer: 1000,
                 });
             }
             this.abrirDialog = false;
+
         },
         async openeditarDialog(value) {
             this.abrirDialog = true;
             var category = await (await axios.get("/api/categoria/" + value)).data;
-            console.log('este',category);
+
             this.categorias.nombre_categoria = category.nombre_categoria;
             this.categorias.descripcion_categoria =
                 category.descripcion_categoria;
@@ -651,9 +653,9 @@ export default {
 
             this.categorias.imgpreview = category.imgpreview;
 
-            console.log("viene datos", category);
+
             this.editarDialog = true;
-            console.log("abrio el modal");
+
         },
         async EliminarCurso() {
             await axios.delete("/api/categoria/" + this.categorias.id);
@@ -667,7 +669,7 @@ export default {
             clearTimeout(this.setTimeoutBuscador);
             //El setTimeout se ejecuta cada vez que nosotros hacemos la peticion al sevidor letra por letra
             this.setTimeoutBuscador = setTimeout(this.listarCategorias, 150);
-            console.log(this.setTimeoutBuscador);
+
         },
         async editarCategoria(){
             console.log("valor de arriba ", this.categorias);

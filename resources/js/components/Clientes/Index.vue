@@ -1,6 +1,5 @@
 <template lang="">
     <div id="kt_app_content_container" class="app-container container-fluid">
-
         <button @click="nuevo()">enviar</button>
         <div class="card card-flush">
             <div class="card-header align-items-center py-5 gap-2 gap-md-5">
@@ -85,24 +84,24 @@
                                 field="ciudad"
                                 header="CIUDAD"
                                 sortable
-                                style="width: 10%"
-                                >
+                                style="width: 15%"
+                            >
                                 {{ slotProps.data.ciudad }}
                             </Column>
                             <Column
                                 field="codigos"
                                 header="CODIGO"
                                 sortable
-                                style="width: 10%"
-                                >
+                                style="width: 15%"
+                            >
                                 {{ slotProps.data.codigos }}
                             </Column>
                             <Column
                                 field="registros"
                                 header="REGISTRO"
                                 sortable
-                                style="width: 10%"
-                                >
+                                style="width: 15%"
+                            >
                                 {{ slotProps.data.registros }}
                             </Column>
                             <Column
@@ -110,11 +109,15 @@
                                 header="CURSOS"
                                 sortable
                                 style="width: 10%"
-                                >
-                                <template #body="slotProps">                                   
+                            >
+                                <template #body="slotProps">
                                     <ul>
-                                        <li v-for="(item,index) in  slotProps.data.cursos" :key="index">
-                                            {{item.nombre_curso}}
+                                        <li
+                                            v-for="(item, index) in slotProps
+                                                .data.cursos"
+                                            :key="index"
+                                        >
+                                            {{ item.nombre_curso }}
                                         </li>
                                     </ul>
                                 </template>
@@ -219,53 +222,6 @@
                         />
                     </div>
                 </div>
-                <div class="formgrid grid">
-                    <div class="field col">
-                        <label for="celular">NUMERO DE CELULAR</label>
-                        <br />
-                        <InputText
-                            v-model="celular"
-                            type="text"
-                            required="true"
-                            size="large"
-                            placeholder="Ingrese el número de celular"
-                        />
-                    </div>
-                    <div class="field col">
-                        <label for="correo">CORREO ELECTRÓNICO</label>
-                        <InputText
-                            v-model="correo"
-                            type="text"
-                            required="true"
-                            size="large"
-                            placeholder="Ingrese el correo electrónico"
-                        />
-                    </div>
-                </div>
-
-                <div class="formgrid grid">
-                    <div class="field col">
-                        <label for="lugar_trabajo">LUGAR DE TRABAJO</label>
-                        <br />
-                        <InputText
-                            v-model="lugar_trabajo"
-                            type="text"
-                            required="true"
-                            size="large"
-                            placeholder="Ingrese el lugar de trabajo"
-                        />
-                    </div>
-                    <div class="field col">
-                        <label for="area">ÁREA DE TRABAJO</label>
-                        <InputText
-                            v-model="area"
-                            type="text"
-                            required="true"
-                            size="large"
-                            placeholder="Ingrese el área de trabajo"
-                        />
-                    </div>
-                </div>
 
                 <div class="formgrid grid">
                     <div class="field col">
@@ -304,81 +260,21 @@
                         />
                     </div>
                     <div class="field col">
-                        <label for="fecha_emision">FECHA DE EMISIÓN </label>
-                        <br />
-
-                        <Calendar
-                            v-model="fecha_emision"
-                            dateFormat="dd/mm/yy"
-                            showIcon
-                            iconDisplay="input"
-                        />
+                        <label for="select" class="mb-3"
+                            >Seleccionar Curso</label
+                        >
+                        <Dropdown
+                            v-model="selectCourse"
+                            :options="Cursos"
+                            optionValue="id"
+                            optionLabel="nombre_curso"
+                            placeholder="seleccione el curso"
+                            class="w-full md:w-50rem"
+                        >
+                        </Dropdown>
                     </div>
                 </div>
 
-                <div class="formgrid grid">
-                    <div class="field col">
-                        <label for="horas_lectivas">HORAS LECTIVAS</label>
-                        <InputText
-                            v-model="horas_lectivas"
-                            type="text"
-                            required="true"
-                            size="large"
-                            placeholder="Ingrese las horas lectivas"
-                        />
-                    </div>
-                    <div class="field col">
-                        <label for="fecha_inicio">FECHA DE INICIO </label>
-                        <br />
-
-                        <Calendar
-                            v-model="fecha_inicio"
-                            dateFormat="dd/mm/yy"
-                            showIcon
-                            iconDisplay="input"
-                        />
-                    </div>
-                </div>
-
-                <div class="formgrid grid">
-                    <div class="field col">
-                        <label for="fecha_fin">FECHA DE FIN </label>
-                        <br />
-
-                        <Calendar
-                            v-model="fecha_fin"
-                            dateFormat="dd/mm/yy"
-                            showIcon
-                            iconDisplay="input"
-                        />
-                    </div>
-                    <div class="field col">
-                        <label for="tema_curso">TEMA DEL CURSO</label>
-                        <br />
-
-                        <InputText
-                            v-model="tema_curso"
-                            type="text"
-                            required="true"
-                            size="large"
-                            placeholder="Ingrese el tema del curso"
-                        />
-                    </div>
-                </div>
-                <div class="formgrid grid">
-                    <div class="field col">
-                        <label for="nota">NOTA</label>
-                        <br />
-
-                        <InputText
-                            v-model="nota"
-                            type="text"
-                            required="true"
-                            size="large"
-                            placeholder="Ingrese la nota"
-                        />
-                    </div>
-                </div>
                 <template #footer>
                     <Button
                         label="Cancelar"
@@ -643,7 +539,7 @@
                 class="p-fluid"
             >
                 <div class="formgrid grid">
-                    <br>
+                    <br />
                     <div class="field col-12">
                         <label for="select" class="mb-3"
                             >Seleccionar Curso</label
@@ -665,7 +561,7 @@
 
                 <div class="formgrid grid">
                     <div class="field col-12">
-                    <input type="file" @change="handlerImportExcel"> 
+                        <input type="file" @change="handlerImportExcel" />
                     </div>
                 </div>
                 <template #footer>
@@ -693,7 +589,7 @@ import axios from "axios";
 export default {
     data() {
         return {
-            Cursos:[],
+            Cursos: [],
             RESPUESTA: [],
             clienteDialog: false,
             clienteeditarDialog: false,
@@ -701,7 +597,7 @@ export default {
             importDialog: false,
             deleteDialog: false,
             CLIENTE: [],
-            listClients:[],
+            listClients: [],
             nombre_cliente: "",
             dni: "",
             celular: "",
@@ -710,6 +606,7 @@ export default {
             area: "",
             ciudad: "",
             codigo: "",
+            select: "",
             registro: "",
             fecha_emision: "",
             horas_lectivas: "",
@@ -735,8 +632,8 @@ export default {
                 nota: "",
                 id: "",
             },
-            selectCourse:null,
-            importExcel:null,
+            selectCourse: null,
+            importExcel: null,
         };
     },
 
@@ -745,29 +642,29 @@ export default {
         this.listarCursos();
     },
     methods: {
-        async listarCursos(){
-            this.Cursos = (await axios.get('api/cursos')).data;
-            console.log("this.Cursos",this.Cursos)
+        async listarCursos() {
+            this.Cursos = (await axios.get("api/cursos")).data;
+            console.log("this.Cursos", this.Cursos);
         },
 
-        async  nuevo(){
+        async nuevo() {
             var listacursocliente = [
                 {
-                    clientes_id:2,
-                    curso_id:1
+                    clientes_id: 2,
+                    curso_id: 1,
                 },
                 {
-                    clientes_id:2,
-                    curso_id:2
+                    clientes_id: 2,
+                    curso_id: 2,
                 },
                 {
-                    clientes_id:2,
-                    curso_id:3
-                }
+                    clientes_id: 2,
+                    curso_id: 3,
+                },
             ];
             var data = JSON.stringify(listacursocliente);
-            this.RESPUESTA = (await axios.post('api/cursoscliente',data)).data;
-            console.log( this.RESPUESTA );
+            this.RESPUESTA = (await axios.post("api/cursoscliente", data)).data;
+            console.log(this.RESPUESTA);
         },
 
         hideDialog() {
@@ -777,10 +674,10 @@ export default {
         openCliente() {
             this.clienteDialog = true;
         },
-        handlerImportExcel($event){
+        handlerImportExcel($event) {
             this.importExcel = $event.target.files[0];
         },
-        async importClient(){
+        async importClient() {
             const form = new FormData();
             form.append("file", this.importExcel);
             form.append("curso_id", this.selectCourse);
@@ -802,6 +699,7 @@ export default {
         async listarCliente() {
             const resp = (await axios.get("/api/clientes")).data;
             this.listClients = resp;
+            console.log(this.listClients);
         },
         conversion_date(fecha) {
             let myDate = new Date(Date.parse(fecha));
@@ -818,25 +716,12 @@ export default {
             const formData = new FormData();
             formData.append("nombre_cliente", this.nombre_cliente);
             formData.append("dni", this.dni);
-            formData.append("celular", this.celular);
-            formData.append("correo", this.correo);
-            formData.append("lugar_trabajo", this.lugar_trabajo);
-            formData.append("area", this.area);
+
             formData.append("ciudad", this.ciudad);
             formData.append("codigo", this.codigo);
             formData.append("registro", this.registro);
-            formData.append(
-                "fecha_emision",
-                this.conversion_date(this.fecha_emision)
-            );
-            formData.append("horas_lectivas", this.horas_lectivas);
-            formData.append(
-                "fecha_inicio",
-                this.conversion_date(this.fecha_inicio)
-            );
-            formData.append("fecha_fin", this.conversion_date(this.fecha_fin));
-            formData.append("tema_curso", this.tema_curso);
-            formData.append("nota", this.nota);
+            formData.append("curso_id", this.selectCourse);
+
             console.log(formData.get("fecha_emision"));
             console.log(formData.get("fecha_inicio"));
             console.log(formData.get("fecha_fin"));
