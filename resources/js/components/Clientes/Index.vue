@@ -17,9 +17,36 @@
                             placeholder="buscar Cliente"
                         />
                     </div>
+                       <div class="field col-12">
+                <div class="field col-12">
+                    <label for="select" class="mb-3">Seleccionar Curso</label>
+                    <Dropdown
+                        v-model="selectCourseSearch"
+                        :options="Cursos"
+                        @change="listarCliente()"
+                        optionValue="id"
+                        optionLabel="nombre_curso"
+                        placeholder="seleccione el curso"
+                        class="w-full md:w-50rem"
+                    >
+                    </Dropdown>
+                </div>
+                <form @submit.prevent="listarCliente()">
+                    <input
+                        v-model="searchClient"
+                        placeholder="Buscar po DNI o NOMBRES COMPLETOS"
+                    />
+                </form>
+                          
+            </div>
                 </div>
 
                 <div class="card-toolbar">
+                       <div class="field col-12">
+
+
+                          
+            </div>
                     <div
                         class="d-flex justify-content-end"
                         data-kt-user-table-toolbar="base"
@@ -531,6 +558,7 @@
                 </template>
             </Dialog>
             <!-- Importar Cliente -->
+
             <Dialog
                 v-model:visible="importDialog"
                 :style="{ width: '35rem' }"
@@ -632,6 +660,44 @@ export default {
                 nota: "",
                 id: "",
             },
+            selectCourseSearch: null,
+            searchClient: null,
+            formCliente: {
+                nombre_cliente: "Jorge Curioso",
+                dni: "123456789",
+                celular: "942231871",
+                correo: "sa@gmail.com",
+                ciudad: "Trujillo",
+                courses: [
+                    {
+                        id: "1",
+                        lugar_trabajo: "Trujillo",
+                        area: "Area 1",
+                        codigo: "codigo001",
+                        registro: "reg001",
+                        fecha_emision: "2024-01-18",
+                        nota: "14",
+                    },
+                    {
+                        id: "2",
+                        lugar_trabajo: "Trujillo1",
+                        area: "Area 2",
+                        codigo: "codigo002",
+                        registro: "reg002",
+                        fecha_emision: "2021-01-17",
+                        nota: "17",
+                    },
+                    {
+                        id: "3",
+                        lugar_trabajo: "Trujillo2",
+                        area: "Area 3",
+                        codigo: "codigo003",
+                        registro: "reg003",
+                        fecha_emision: "2024-01-12",
+                        nota: "5",
+                    },
+                ],
+            },
             selectCourse: null,
             importExcel: null,
         };
@@ -697,9 +763,15 @@ export default {
         },
 
         async listarCliente() {
-            const resp = (await axios.get("/api/clientes")).data;
+            const resp = (
+                await axios.get("/api/clientes", {
+                    params: {
+                        idCourse: this.selectCourseSearch,
+                        searchClient: this.searchClient,
+                    },
+                })
+            ).data;
             this.listClients = resp;
-            console.log(this.listClients);
         },
         conversion_date(fecha) {
             let myDate = new Date(Date.parse(fecha));
@@ -712,22 +784,10 @@ export default {
             return realDate;
         },
         async guardarCliente() {
-            console.log("datos");
-            const formData = new FormData();
-            formData.append("nombre_cliente", this.nombre_cliente);
-            formData.append("dni", this.dni);
-
-            formData.append("ciudad", this.ciudad);
-            formData.append("codigo", this.codigo);
-            formData.append("registro", this.registro);
-            formData.append("curso_id", this.selectCourse);
-
-            console.log(formData.get("fecha_emision"));
-            console.log(formData.get("fecha_inicio"));
-            console.log(formData.get("fecha_fin"));
-
-            this.RESPUESTA = await await axios.post("/api/clientes", formData);
-
+            this.formCliente.courses = JSON.stringify(this.formCliente.courses);
+            console.log("this.formCliente",this.formCliente)
+            this.RESPUESTA = await (await axios.post("/api/clientes", this.formCliente));
+            console.log("this.RESPUESTA",this.RESPUESTA)
             if (this.RESPUESTA.status == 200) {
                 window.location.href = "/clientes";
                 this.$swal.fire({
@@ -735,9 +795,10 @@ export default {
                     icon: "success",
                     timer: 8000,
                 });
+                this.listarCliente();
             }
             this.clienteDialog = false;
-        },
+        },
         async openeditarCliente(value) {
             this.clienteeditarDialog = true;
             console.log(value);

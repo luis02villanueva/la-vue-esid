@@ -9,10 +9,10 @@ class Curso_Cliente extends Model
 {
     use HasFactory;
 
-    
+
     protected $table = 'curso__clientes';
     protected $fillable = [
-        'curso_id',
+        'cursos_id',
         'clientes_id',
         'lugar_trabajo',
         'area',

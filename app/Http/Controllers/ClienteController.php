@@ -12,45 +12,49 @@ use App\Imports\ClienteImport;
 class ClienteController extends Controller
 {
 
-    public function index()
+  public function index(Request $request)
     {
-
-        $clientes = DB::table("curso__clientes")
-            ->select(
-                'clientes.id',
-                'nombre_cliente',
-                'dni',
-                'ciudad',
+        $idCourse = $request->query('idCourse', null);
+        $searchClient = $request->query('searchClient', '');
+        if (is_numeric($searchClient)) {
+            $attribute = 'clientes.dni';
+        }else{
+            $attribute = 'clientes.nombre_cliente';
+        }
+        if($idCourse){
+            $clientes = DB::table("curso__clientes")
+                ->select('clientes.id', 'nombre_cliente', 'dni','ciudad',
                 DB::raw('GROUP_CONCAT(codigo) as codigos'),
-                DB::raw('GROUP_CONCAT(registro) as registros')
-            )
-            ->join('clientes', 'curso__clientes.clientes_id', '=', 'clientes.id')
-            ->groupBy('clientes.id', 'nombre_cliente', 'dni', 'ciudad')
-            ->orderBy('clientes.created_at', 'desc')
-            ->get();
-        foreach ($clientes as $cliente) {
-            $cursos = DB::table("curso__clientes")
-                ->select(
-                    'cursos.id',
-                    'nombre_curso',
-                    'descripcion_curso',
-                    'fecha_inicio',
-                    'fecha_inicio',
-                    'fecha_fin',
-                    'horas_lectivas'
-                )
-                ->join('cursos', 'curso__clientes.cursos_id', '=', 'cursos.id')
-                ->groupBy(
-                    'cursos.id',
-                    'nombre_curso',
-                    'descripcion_curso',
-                    'fecha_inicio',
-                    'fecha_inicio',
-                    'fecha_fin',
-                    'horas_lectivas'
-                )
-                ->where('curso__clientes.clientes_id', $cliente->id)
+                DB::raw('GROUP_CONCAT(registro) as registros'))
+                ->join('clientes','curso__clientes.clientes_id','=','clientes.id')
+                ->groupBy('clientes.id', 'nombre_cliente', 'dni','ciudad')
+                ->where('curso__clientes.cursos_id', $idCourse)
+                ->where($attribute, 'LIKE', "%$searchClient%")
+                ->orderBy('clientes.created_at', 'desc')
                 ->get();
+        }else{
+            $clientes = DB::table("curso__clientes")
+                ->select('clientes.id', 'nombre_cliente', 'dni','ciudad',
+                DB::raw('GROUP_CONCAT(codigo) as codigos'),
+                DB::raw('GROUP_CONCAT(registro) as registros'))
+                ->join('clientes','curso__clientes.clientes_id','=','clientes.id')
+                ->groupBy('clientes.id', 'nombre_cliente', 'dni','ciudad')
+                ->where($attribute, 'LIKE', "%$searchClient%")
+                ->orderBy('clientes.created_at', 'desc')
+                ->get();
+        }
+        foreach ($clientes as $cliente){
+            $cursos = DB::table("curso__clientes")
+            ->select('cursos.id','nombre_curso'
+            ,'descripcion_curso','fecha_inicio','fecha_inicio'
+            ,'fecha_fin',
+                'horas_lectivas')
+            ->join('cursos','curso__clientes.cursos_id','=','cursos.id')
+            ->groupBy('cursos.id','nombre_curso','descripcion_curso','fecha_inicio','fecha_inicio'
+            ,'fecha_fin',
+                'horas_lectivas')
+            ->where('curso__clientes.clientes_id',$cliente->id)
+            ->get();
             $cliente->cursos = $cursos;
         }
         return response()->json($clientes);
@@ -130,41 +134,32 @@ class ClienteController extends Controller
         return response()->json($cursos_cliente);
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
+
+        $courses = json_decode($request->input('courses'), true);
         $clientes = new Cliente;
         $clientes->nombre_cliente = $request->input('nombre_cliente');
         $clientes->dni = $request->input('dni');
+        $clientes->celular = $request->input('celular');
+        $clientes->correo = $request->input('correo');
         $clientes->ciudad = $request->input('ciudad');
-
-
         $clientes->save();
-        // $clientesa->save();
-        $cursos_id = $request->input('curso_id');
-        $client_new = new Curso_Cliente;
-        $client_new->nombre_cliente = $clientes->nombre_cliente;
-        $client_new->dni = $clientes->dni;
-        dd($client_new);
-        $client_new->ciudad = $clientes->ciudad;
-
-        $client_new->codigo = $request->input('codigo');
-        $client_new->registro = $request->input('registro');
-        $client_new->cursos_id = intval($cursos_id);
-        $client_new->save();
-
-        //Array de detalles
-        //Recorro todos los elementos
-
-        // foreach ($clientes as $ep => $det) {
-        //     $detalle = new Curso_Cliente();
-        //     $detalle->clientes_id =  $clientes->id;
-        //     $detalle->save();
-        // }
+        foreach ($courses as $course) {
+            $detalle = new Curso_Cliente();
+            $detalle->clientes_id = $clientes->id;
+            $detalle->cursos_id = intval($course["id"]);
+            $detalle->lugar_trabajo =  $course["lugar_trabajo"];
+            $detalle->area =  $course["area"];
+            $detalle->codigo =  $course["codigo"];
+            $detalle->registro =  $course["registro"];
+            $detalle->fecha_emision =  $course["fecha_emision"];
+            $detalle->nota =  $course["nota"];
+            $detalle->save();
+        }
         $data = [
-            'message' => 'clientes creado satisfactoriamente',
-            'clientes' => $client_new,
-
-
+            'message' => 'Cliente creado satisfactoriamente',
+            'clientes' => $clientes,
             'status' => 200,
         ];
         return response()->json($data);

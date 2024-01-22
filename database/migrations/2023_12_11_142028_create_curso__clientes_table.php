@@ -16,7 +16,7 @@ class CreateCursoClientesTable extends Migration
         Schema::create('curso__clientes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('cursos_id');
-            $table->unsignedBigInteger('clientes_id');            
+            $table->unsignedBigInteger('clientes_id');
             $table->string('lugar_trabajo')->nullable();
             $table->string('area')->nullable();
             $table->string('codigo')->nullable();
